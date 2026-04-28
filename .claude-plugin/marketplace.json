@@ -1,0 +1,34 @@
+{
+  "name": "aipowerautomate-canvas",
+  "owner": {
+    "name": "NawafSheikh",
+    "email": "nawafsheikh1@gmail.com"
+  },
+  "metadata": {
+    "description": "Generate, edit, and live-sync Power Apps canvas apps from Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "canvas-builder",
+      "source": "./plugins/canvas-builder",
+      "description": "Generate, edit, and deploy Power Apps canvas apps with live Studio sync",
+      "author": {
+        "name": "NawafSheikh"
+      },
+      "homepage": "https://github.com/NawafSheikh/aipowerautomate-canvas",
+      "repository": "https://github.com/NawafSheikh/aipowerautomate-canvas",
+      "license": "MIT",
+      "keywords": [
+        "power-apps",
+        "canvas-apps",
+        "pa-yaml",
+        "power-platform",
+        "low-code",
+        "mcp",
+        "claude-code"
+      ],
+      "category": "workflow",
+      "tags": ["canvas-apps", "power-apps", "mcp"]
+    }
+  ]
+}

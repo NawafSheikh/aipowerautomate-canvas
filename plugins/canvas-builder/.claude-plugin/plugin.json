@@ -1,0 +1,19 @@
+{
+  "name": "canvas-builder",
+  "version": "0.1.0",
+  "description": "Generate, edit, and deploy Power Apps canvas apps with live Studio sync.",
+  "author": {
+    "name": "NawafSheikh"
+  },
+  "homepage": "https://github.com/NawafSheikh/aipowerautomate-canvas",
+  "repository": "https://github.com/NawafSheikh/aipowerautomate-canvas",
+  "license": "MIT",
+  "keywords": [
+    "power-apps",
+    "canvas-apps",
+    "pa-yaml",
+    "power-platform",
+    "low-code",
+    "mcp"
+  ]
+}
