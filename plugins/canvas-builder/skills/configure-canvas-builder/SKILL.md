@@ -135,7 +135,7 @@ claude mcp add --scope {CLAUDE_SCOPE} canvas-builder \
   -e CANVAS_ENVIRONMENT_ID={ENV_ID} \
   -e CANVAS_APP_ID={APP_ID} \
   -e CANVAS_CLUSTER_CATEGORY={CLUSTER_CATEGORY} \
-  -- npx -y @aipowerautomate/canvas-builder-mcp@latest
+  -- npx -y @nawafsheikh/canvas-builder-mcp@latest
 ```
 
 If the command fails because `canvas-builder` is already registered, remove it first, then re-add:
@@ -146,7 +146,7 @@ claude mcp add --scope {CLAUDE_SCOPE} canvas-builder \
   -e CANVAS_ENVIRONMENT_ID={ENV_ID} \
   -e CANVAS_APP_ID={APP_ID} \
   -e CANVAS_CLUSTER_CATEGORY={CLUSTER_CATEGORY} \
-  -- npx -y @aipowerautomate/canvas-builder-mcp@latest
+  -- npx -y @nawafsheikh/canvas-builder-mcp@latest
 ```
 
 **If TOOL_TYPE is `vscode-copilot` or `copilot`:**
@@ -172,7 +172,7 @@ claude mcp add --scope {CLAUDE_SCOPE} canvas-builder \
          "command": "npx",
          "args": [
            "-y",
-           "@aipowerautomate/canvas-builder-mcp@latest"
+           "@nawafsheikh/canvas-builder-mcp@latest"
          ],
          "env": {
            "CANVAS_ENVIRONMENT_ID": "{ENV_ID}",
