@@ -1,6 +1,6 @@
 {
   "name": "@nawafsheikh/canvas-builder-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Canvas Apps MCP server with live Power Apps Studio sync.",
   "license": "MIT",
   "author": "NawafSheikh",

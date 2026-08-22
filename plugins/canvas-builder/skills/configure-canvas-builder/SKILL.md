@@ -97,8 +97,8 @@ Ask the user:
 > **Keep this browser tab open for the entire session.** The MCP server communicates with Power Apps through the coauthoring session tied to that tab. Closing the tab ends the coauthoring session, which prevents `compile_canvas` and `sync_canvas` from working and means you can't see or save generated changes.
 
 Then extract from the URL:
-- **ENV_ID**: the path segment between `/e/` and the next `/` (e.g. `Default-91bee3d9-0c15-4f17-8624-c92bb8b36ead`).
-- **APP_ID**: URL-decode the `app-id` query parameter value, then take the last segment after the final `/` (e.g. `6fc3e3d1-292b-4281-8826-577f78512e56`)
+- **ENV_ID**: the path segment between `/e/` and the next `/` (e.g. `Default-00000000-0000-0000-0000-000000000000`).
+- **APP_ID**: URL-decode the `app-id` query parameter value, then take the last segment after the final `/` (e.g. `11111111-1111-1111-1111-111111111111`)
 - **MAKER_HOSTNAME**: the hostname of the URL (e.g. `make.powerapps.com`)
 - **CLUSTER_CATEGORY**: determined from MAKER_HOSTNAME (see table below)
 
@@ -116,10 +116,10 @@ Then extract from the URL:
 
 **Example:**
 
-Example URL: `https://make.powerapps.com/e/Default-91bee3d9-0c15-4f17-8624-c92bb8b36ead/canvas/?action=edit&app-id=%2Fproviders%2FMicrosoft.PowerApps%2Fapps%2F6fc3e3d1-292b-4281-8826-577f78512e56`
+Example URL: `https://make.powerapps.com/e/Default-00000000-0000-0000-0000-000000000000/canvas/?action=edit&app-id=%2Fproviders%2FMicrosoft.PowerApps%2Fapps%2F11111111-1111-1111-1111-111111111111`
 
-- ENV_ID → `Default-91bee3d9-0c15-4f17-8624-c92bb8b36ead`
-- APP_ID → `6fc3e3d1-292b-4281-8826-577f78512e56`
+- ENV_ID → `Default-00000000-0000-0000-0000-000000000000`
+- APP_ID → `11111111-1111-1111-1111-111111111111`
 - MAKER_HOSTNAME → `make.powerapps.com`
 - CLUSTER_CATEGORY → `prod`
 

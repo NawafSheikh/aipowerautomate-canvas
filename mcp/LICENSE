@@ -1,6 +1,12 @@
 MIT License
 
-Copyright (c) 2026 NawafSheikh
+Copyright (c) Microsoft Corporation.
+Copyright (c) 2026 NawafSheikh (modifications)
+
+The Claude Code plugin content in plugins/canvas-builder (skills, agents, and
+reference guides) is derived from the MIT-licensed microsoft/power-platform-skills
+project, specifically its plugins/canvas-apps plugin. The Microsoft copyright
+notice above is retained as the MIT license requires.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

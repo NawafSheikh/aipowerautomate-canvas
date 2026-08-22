@@ -23,6 +23,14 @@ function extractText(result: unknown): string {
   return r?.content?.[0]?.text ?? "";
 }
 
+function isFailureResult(result: unknown, text: string): boolean {
+  if ((result as ToolResult | undefined)?.isError) return true;
+  if (text.trim().length === 0) return true;
+  if (text.includes("An error occurred invoking")) return true;
+  if (text.includes("SessionId:")) return true;
+  return false;
+}
+
 function parseControlNames(listText: string): string[] {
   return listText
     .split("\n")
@@ -58,8 +66,17 @@ async function main() {
     const name = names[i];
     try {
       const r = await engine.invoke("describe_control", { controlName: name });
-      catalog.push({ name, describe: extractText(r) });
-      process.stderr.write(`[scrape] ${i + 1}/${names.length}  ${name}\n`);
+      const text = extractText(r);
+      if (isFailureResult(r, text)) {
+        // The runtime answers a failed describe with an isError result rather
+        // than an exception. Storing its text would put an error message, and
+        // the session's SessionId and RequestId, into the published catalog.
+        process.stderr.write(`[scrape] SKIP ${name}: runtime returned an error\n`);
+        catalog.push({ name, describe: "" });
+      } else {
+        catalog.push({ name, describe: text });
+        process.stderr.write(`[scrape] ${i + 1}/${names.length}  ${name}\n`);
+      }
     } catch (err) {
       process.stderr.write(`[scrape] FAIL ${name}: ${(err as Error).message}\n`);
       catalog.push({ name, describe: "" });

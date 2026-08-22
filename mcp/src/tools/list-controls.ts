@@ -33,6 +33,19 @@ async function loadCatalog(): Promise<CatalogEntry[]> {
   );
 }
 
+/**
+ * A catalog entry is only usable if it holds a real schema. Empty strings mean
+ * the scrape failed for that control; error text means an older catalog stored
+ * the runtime's failure response as if it were data, which also leaked the
+ * scraping session's SessionId and RequestId. Reject both.
+ */
+function isUsableSchema(describe: string): boolean {
+  if (describe.trim().length === 0) return false;
+  if (describe.includes("An error occurred invoking")) return false;
+  if (describe.includes("SessionId:")) return false;
+  return true;
+}
+
 export async function listControls(): Promise<{
   content: { type: "text"; text: string }[];
 }> {
@@ -60,6 +73,25 @@ export async function describeControl(controlName: string): Promise<{
         {
           type: "text",
           text: `Control '${controlName}' not found.`,
+        },
+      ],
+    };
+  }
+  if (!isUsableSchema(entry.describe)) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: "text",
+          text:
+            `'${entry.name}' is a known control, but no property schema is in the ` +
+            `bundled catalog. The scrape that built the catalog could not reach ` +
+            `this control.
+
+` +
+            `Call 'describe_control' again once the authoring runtime is running ` +
+            `(it answers live), or rebuild the catalog with 'npm run scrape' against ` +
+            `a Studio session that has the control available.`,
         },
       ],
     };

@@ -111,7 +111,7 @@ export class CanvasEngine {
       params: {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "canvas-builder", version: "0.1.0" },
+        clientInfo: { name: "canvas-builder", version: "0.1.1" },
       },
     };
     await new Promise<void>((resolve, reject) => {

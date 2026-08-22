@@ -19,17 +19,43 @@ const ENGINE_TOOLS = new Set([
   "get_appchecker_errors",
 ]);
 
+/**
+ * Start the authoring runtime on first use, not at process start.
+ *
+ * The runtime is a .NET tool launched through `dnx`. Starting it eagerly meant
+ * that a machine without the .NET 10 SDK never reached `server.connect()`, so
+ * the whole MCP server looked dead to the client and even the two offline tools
+ * (`list_controls`, `describe_control`) were unreachable. Deferring the start
+ * keeps the server responsive and turns a missing runtime into an actionable
+ * error on the one call that needs it.
+ */
+function createEngineStarter(engine: CanvasEngine): () => Promise<CanvasEngine> {
+  let started: Promise<CanvasEngine> | null = null;
+  return () => {
+    if (started) return started;
+    started = (async () => {
+      engine.start({
+        CANVAS_ENVIRONMENT_ID: process.env.CANVAS_ENVIRONMENT_ID ?? "",
+        CANVAS_APP_ID: process.env.CANVAS_APP_ID ?? "",
+        CANVAS_CLUSTER_CATEGORY: process.env.CANVAS_CLUSTER_CATEGORY ?? "prod",
+      });
+      await engine.initialize();
+      return engine;
+    })().catch((err) => {
+      // Let the next call retry rather than caching a permanent failure.
+      started = null;
+      throw err;
+    });
+    return started;
+  };
+}
+
 async function main() {
   const engine = new CanvasEngine();
-  engine.start({
-    CANVAS_ENVIRONMENT_ID: process.env.CANVAS_ENVIRONMENT_ID ?? "",
-    CANVAS_APP_ID: process.env.CANVAS_APP_ID ?? "",
-    CANVAS_CLUSTER_CATEGORY: process.env.CANVAS_CLUSTER_CATEGORY ?? "prod",
-  });
-  await engine.initialize();
+  const ensureEngine = createEngineStarter(engine);
 
   const server = new Server(
-    { name: "canvas-builder", version: "0.1.0" },
+    { name: "canvas-builder", version: "0.1.1" },
     { capabilities: { tools: {} } },
   );
 
@@ -119,8 +145,28 @@ async function main() {
     }
 
     if (ENGINE_TOOLS.has(name)) {
-      const result = await engine.invoke(name, (args ?? {}) as Record<string, unknown>);
-      return result as { content: { type: "text"; text: string }[] };
+      try {
+        const live = await ensureEngine();
+        const result = await live.invoke(name, (args ?? {}) as Record<string, unknown>);
+        return result as { content: { type: "text"; text: string }[] };
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
+        return {
+          isError: true,
+          content: [{
+            type: "text" as const,
+            text:
+              `'${name}' needs the Power Apps canvas authoring runtime, which could ` +
+              `not be started: ${detail}
+
+` +
+              `It runs through 'dnx' from the .NET 10 SDK. Check 'dotnet --list-sdks' ` +
+              `shows a 10.x entry, and that CANVAS_ENVIRONMENT_ID and CANVAS_APP_ID ` +
+              `are set for a Studio session with coauthoring enabled and its tab open. ` +
+              `The offline tools 'list_controls' and 'describe_control' work regardless.`,
+          }],
+        };
+      }
     }
 
     return {

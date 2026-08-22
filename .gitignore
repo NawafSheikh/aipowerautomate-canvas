@@ -3,3 +3,5 @@ node_modules/
 .vscode/
 .idea/
 mcp/dist/
+mcp/dist-old/
+*.tgz

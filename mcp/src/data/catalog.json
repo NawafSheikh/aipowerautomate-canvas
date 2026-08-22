@@ -265,7 +265,7 @@
   },
   {
     "name": "ModernButton",
-    "describe": "An error occurred invoking 'describe_control': HTTP 404 (NotFound): {\"error\":\"Control 'ModernButton' not found.\"} [SessionId: a706e947-a901-40e3-8a02-645692f340b9, RequestId: 9ebc3c6e-4130-4e55-b600-96e9f650841d]"
+    "describe": ""
   },
   {
     "name": "ModernCard",
@@ -277,11 +277,11 @@
   },
   {
     "name": "ModernDataGrid",
-    "describe": "An error occurred invoking 'describe_control': HTTP 404 (NotFound): {\"error\":\"Control 'ModernDataGrid' not found.\"} [SessionId: a706e947-a901-40e3-8a02-645692f340b9, RequestId: 9513bb72-800b-44a9-9d13-29bf843ff553]"
+    "describe": ""
   },
   {
     "name": "ModernDataGridColumn",
-    "describe": "An error occurred invoking 'describe_control': HTTP 404 (NotFound): {\"error\":\"Control 'ModernDataGridColumn' not found.\"} [SessionId: a706e947-a901-40e3-8a02-645692f340b9, RequestId: 4002861e-927a-433a-97f5-0bf774ea1699]"
+    "describe": ""
   },
   {
     "name": "ModernDatePicker",
@@ -289,11 +289,11 @@
   },
   {
     "name": "ModernDropdown",
-    "describe": "An error occurred invoking 'describe_control': HTTP 404 (NotFound): {\"error\":\"Control 'ModernDropdown' not found.\"} [SessionId: a706e947-a901-40e3-8a02-645692f340b9, RequestId: 93f5d217-4a7a-47a2-9e32-24eb4c230e60]"
+    "describe": ""
   },
   {
     "name": "ModernIcon",
-    "describe": "An error occurred invoking 'describe_control': HTTP 404 (NotFound): {\"error\":\"Control 'ModernIcon' not found.\"} [SessionId: a706e947-a901-40e3-8a02-645692f340b9, RequestId: 109e86fe-6d29-4327-8d35-d164c4f9d926]"
+    "describe": ""
   },
   {
     "name": "ModernInformationButton",
@@ -313,7 +313,7 @@
   },
   {
     "name": "ModernSlider",
-    "describe": "An error occurred invoking 'describe_control': HTTP 404 (NotFound): {\"error\":\"Control 'ModernSlider' not found.\"} [SessionId: a706e947-a901-40e3-8a02-645692f340b9, RequestId: a915f1e6-8d83-407e-9baf-24214f148158]"
+    "describe": ""
   },
   {
     "name": "ModernTabList",
