@@ -1,0 +1,121 @@
+name: publish
+
+# Tag-gated and staged. A v* tag runs `verify` only. The publish jobs stay off
+# until the repository variable PUBLISH_ENABLED is set to "true", so arming a
+# release is a deliberate act rather than a side effect of tagging.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: mcp
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Server answers initialize over stdio
+        run: |
+          printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
+            | node dist/index.js \
+            | tee /tmp/init.json
+          grep -q '"serverInfo"' /tmp/init.json
+
+      - name: Catalog carries no error payloads or session ids
+        run: |
+          node -e '
+            const c = require("./src/data/catalog.json");
+            const bad = c.filter(e =>
+              e.describe.includes("An error occurred invoking") ||
+              e.describe.includes("SessionId:"));
+            if (bad.length) {
+              console.error("poisoned catalog entries:", bad.map(e => e.name).join(", "));
+              process.exit(1);
+            }
+            console.log(`catalog clean: ${c.length} entries`);
+          '
+
+      - name: Tag must match package.json version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$pkg" ]; then
+            echo "tag $tag does not match package.json version $pkg" >&2
+            exit 1
+          fi
+
+      - name: server.json must match package.json version
+        run: |
+          pkg="$(node -p "require('./package.json').version")"
+          srv="$(node -p "require('./server.json').version")"
+          pkgref="$(node -p "require('./server.json').packages[0].version")"
+          if [ "$srv" != "$pkg" ] || [ "$pkgref" != "$pkg" ]; then
+            echo "server.json versions ($srv, $pkgref) do not match package.json ($pkg)" >&2
+            exit 1
+          fi
+
+  npm:
+    needs: verify
+    if: vars.PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      # Required for npm trusted publishing (OIDC). With a trusted publisher
+      # configured on npmjs.com for this repo and workflow, no token is needed.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - run: npm ci
+      - run: npm run build
+      - run: npm install -g npm@latest
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  mcp-registry:
+    needs: npm
+    if: vars.PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      # The MCP registry authenticates GitHub-namespaced servers
+      # (io.github.<owner>/<name>) with an Actions OIDC token.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mcp-publisher
+        run: |
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/').tar.gz" \
+            | tar xz mcp-publisher
+          chmod +x mcp-publisher
+
+      - name: Log in with GitHub OIDC
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to the MCP registry
+        run: ./mcp-publisher publish
